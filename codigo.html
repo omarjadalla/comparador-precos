@@ -1,0 +1,120 @@
+<html>
+  <head>          
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <style rel="stylesheet">
+  a{text-decoration: none;}
+  a:hover{opacity: 0.8; filter: alpha(opacity=80);}
+  #ofertas .oferta{float: left; color: #555; margin: 10px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }   
+  #ofertas .img img{height: 100%; }  
+  #ofertas .descricao{margin-left:5px; } 
+  #ofertas .preco{font-size: 16px; margin: 0;}
+  #ofertas .titulo{font-size: 12px; margin:0; margin-top: 2px; margin-bottom: 2px; overflow: hidden;}
+  #ofertas .loja{height: 30px; margin: auto;}
+  .grade .oferta{max-width: 300px;}
+  .grade .descricao{max-width: 150px;}
+  .grade .titulo{height: 40px;}
+  .lista .oferta{ clear: both; }
+  .lista .descricao{max-width: 250px;}
+  .lista .titulo{max-height: 40px;}
+  .estilo1 .img{max-height: 100px; max-width: 100px;}  
+  .estilo1 .img, .estilo1 .descricao, .estilo1 .loja{float: left;} 
+  .estilo2 .img, .estilo2 .descricao{float: none;}
+  .estilo2 .img{max-height: 100px; max-width: 200px; margin-bottom: 5px;}  
+  .estilo2 {text-align: center; }
+  .estilo2 .oferta{max-width: 200px;}
+    </style> 
+<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script>
+
+	var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+
+
+
+if(vars['img']){img =vars['img'];}
+if(vars['titulo']){titulo = vars['titulo'];}
+if(vars['modo']){modo =vars['modo'];}//'grade';//lista
+if(vars['estilo']){estilo =vars['estilo'];}
+if(vars['sourceId']){sourceId =vars['sourceId'];}else{ sourceId ='28329555';}
+if(vars['productId']){produto =vars['productId'];}
+$.ajax({
+	url: "http://sandbox.buscape.com.br/service/findOfferList/lomadee/79796147437938494e58303d/",
+	jsonp: "callback",
+	  dataType: "jsonp",
+	  data: {
+	    format: "json",
+	    sourceId: sourceId,
+	    sort: "price",
+	    results: vars['results'],
+	    productId: produto
+	  },
+	success: function(data){
+		for (var i = 0; i < data.totalresultsreturned; i++) {
+              hasOffer = true;
+              
+              var offerId = data.offer[i].offer.id;
+              var offerName = data.offer[i].offer.offername;
+              var price = data.offer[i].offer.price.value;
+              var link = data.offer[i].offer.links[0].link.url;
+              var sellerName = data.offer[i].offer.seller.sellername;
+              var thumb = data.offer[i].offer.thumbnail.url;
+              
+              if (data.offer[i].offer.seller.thumbnail != null) {
+                var sellerThumb = data.offer[i].offer.seller.thumbnail.url;
+              }  
+                var html = "<a target='_blank' href='"+link+"' class='oferta'>";
+                if(img==1){
+                	html+="<div class='img'><img alt='"+offerName+"' src='"+thumb+"'></div>";
+                }else if(modo=='lista' && estilo == 1 && sellerThumb){
+                	html+= "<img class='loja' alt='"+sellerName+"' src='"+sellerThumb+"'>";
+                }
+                html +="<div class='descricao'>";
+
+                if(titulo==1){
+                  html +="<p class='preco'><b >R$ "+price+"</b></p>";
+                	html+="<p class='titulo'>"+offerName+"</p>";
+                }else{
+                  html +="<p class='preco' style='margin-top:5px;'><b >R$ "+price+"</b></p>";
+                }
+                if((estilo ==2 ||(img==1 || modo=='grade')) && sellerThumb){
+	                html+= "<img class='loja' alt='"+sellerName+"' src='"+sellerThumb+"'></div>";
+	            }
+                html += "</div></a>";
+               
+
+              jQuery("#ofertas").append(html);
+              if(modo=='grade'){
+              	$('#ofertas').addClass('grade');
+              }
+              if(modo=='lista'){
+              	$('#ofertas').addClass('lista');
+              }
+              if(estilo==2){
+              	$('#ofertas').addClass('estilo2');
+              }else{
+              	$('#ofertas').addClass('estilo1');
+              }
+
+            }
+	},
+	error: function(data){
+		alert("error");
+	}
+});
+</script>    
+
+  </head>      
+  <body>  
+	<div id="ofertas"></div>
+</body>
+</html>
+
+ 
+
+ 
